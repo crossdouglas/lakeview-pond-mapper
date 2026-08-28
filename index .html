@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LakeView Pond Mapper v0.2</title>
+
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.5.0/mapbox-gl-draw.css" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.1.0/mapbox-gl-geocoder.css" rel="stylesheet">
+
+  <style>
+    html, body { margin: 0; min-height: 100%; font-family: Arial, sans-serif; background: #f7f7f7; color: #111; }
+    #app { max-width: 1200px; margin: 0 auto; background: #fff; min-height: 100vh; }
+    header { padding: 16px 18px 10px; border-bottom: 1px solid #ddd; }
+    header h1 { margin: 0 0 4px; font-size: 22px; }
+    header p { margin: 0; color: #555; font-size: 14px; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto auto auto;
+      gap: 10px;
+      padding: 12px 18px;
+      border-bottom: 1px solid #e2e2e2;
+      align-items: end;
+    }
+    .field label { display:block; font-size:12px; color:#555; margin-bottom:5px; }
+    .field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 11px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+    }
+    button {
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 7px;
+      border: 1px solid #aaa;
+      background: #fff;
+      cursor: pointer;
+      min-height: 42px;
+    }
+    button.primary { font-weight: 700; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    #map { height: 600px; }
+    #results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px 18px;
+      border-top: 1px solid #ddd;
+    }
+    .card { padding: 12px 14px; border: 1px solid #ddd; border-radius: 8px; }
+    .label { color: #666; font-size: 12px; margin-bottom: 5px; }
+    .value { font-size: 24px; font-weight: 700; }
+    #status {
+      padding: 0 18px 14px;
+      color: #555;
+      font-size: 13px;
+    }
+    #preview {
+      margin: 0 18px 18px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      display: none;
+    }
+    #preview h2 { margin:0; padding:12px 14px; font-size:16px; border-bottom:1px solid #ddd; }
+    #payload {
+      margin: 0;
+      padding: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      background: #fafafa;
+    }
+    @media (max-width: 800px) {
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .field { grid-column: 1 / -1; }
+      #map { height: 480px; }
+      #results { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>LakeView Pond Mapper — v0.2</h1>
+    <p>Name the lake, draw the shoreline, review the measurements, then preview exactly what LakeView would save.</p>
+  </header>
+
+  <section class="toolbar">
+    <div class="field">
+      <label for="lakeName">Lake Name</label>
+      <input id="lakeName" type="text" placeholder="Example: Lake 7">
+    </div>
+    <button id="drawBtn" class="primary" type="button">Draw Pond</button>
+    <button id="redrawBtn" type="button">Redraw</button>
+    <button id="saveBtn" class="primary" type="button" disabled>Preview Save</button>
+  </section>
+
+  <div id="map"></div>
+
+  <section id="results">
+    <div class="card">
+      <div class="label">Surface Area</div>
+      <div class="value" id="acres">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Shoreline Length</div>
+      <div class="value" id="feet">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Polygon Points</div>
+      <div class="value" id="points">—</div>
+    </div>
+  </section>
+
+  <div id="status">Search for the site, click Draw Pond, then trace the shoreline. Double-click the last point to finish.</div>
+
+  <section id="preview">
+    <h2>LakeView Save Preview</h2>
+    <pre id="payload"></pre>
+  </section>
+</div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.5.0/mapbox-gl-draw.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.1.0/mapbox-gl-geocoder.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
+
+<script>
+  // Replace only the text inside the quotation marks below with your Mapbox default public token.
+  mapboxgl.accessToken = 'pk.eyJ1IjoiY3Jvc3Nkb3VnbGFzIiwiYSI6ImNtdGRmdTVrazB2cHUyem9wbzJnN2E0bTMifQ.A6K95rnm5KW3Z55PxeMSbQ';
+
+  const state = {
+    mappedAreaAcres: null,
+    shorelineLF: null,
+    polygonGeoJSON: null
+  };
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/satellite-streets-v12',
+    center: [-80.25, 26.4],
+    zoom: 9
+  });
+
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+  const geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl,
+    marker: false,
+    placeholder: 'Search address or place'
+  });
+  map.addControl(geocoder, 'top-left');
+
+  const draw = new MapboxDraw({
+    displayControlsDefault: false,
+    controls: {
+      polygon: true,
+      trash: true
+    }
+  });
+  map.addControl(draw, 'top-right');
+
+  const acresEl = document.getElementById('acres');
+  const feetEl = document.getElementById('feet');
+  const pointsEl = document.getElementById('points');
+  const statusEl = document.getElementById('status');
+  const saveBtn = document.getElementById('saveBtn');
+  const previewEl = document.getElementById('preview');
+  const payloadEl = document.getElementById('payload');
+  const lakeNameEl = document.getElementById('lakeName');
+
+  function resetMeasurements() {
+    state.mappedAreaAcres = null;
+    state.shorelineLF = null;
+    state.polygonGeoJSON = null;
+    acresEl.textContent = '—';
+    feetEl.textContent = '—';
+    pointsEl.textContent = '—';
+    saveBtn.disabled = true;
+    previewEl.style.display = 'none';
+    payloadEl.textContent = '';
+  }
+
+  function clearAndDraw() {
+    draw.deleteAll();
+    resetMeasurements();
+    draw.changeMode('draw_polygon');
+    statusEl.textContent = 'Trace the shoreline. Double-click the last point to finish the polygon.';
+  }
+
+  function updateMeasurements() {
+    const data = draw.getAll();
+
+    if (!data.features.length) {
+      resetMeasurements();
+      statusEl.textContent = 'No pond polygon is currently drawn.';
+      return;
+    }
+
+    const polygon = data.features[data.features.length - 1];
+    if (!polygon.geometry || polygon.geometry.type !== 'Polygon') return;
+
+    const areaSqMeters = turf.area(polygon);
+    const acres = areaSqMeters / 4046.8564224;
+
+    const ring = polygon.geometry.coordinates[0];
+    const line = turf.lineString(ring);
+    const perimeterKm = turf.length(line, { units: 'kilometers' });
+    const perimeterFeet = perimeterKm * 3280.839895;
+
+    state.mappedAreaAcres = Number(acres.toFixed(4));
+    state.shorelineLF = Math.round(perimeterFeet);
+    state.polygonGeoJSON = polygon.geometry;
+
+    acresEl.textContent = acres.toFixed(2) + ' ac';
+    feetEl.textContent = Math.round(perimeterFeet).toLocaleString() + ' ft';
+    pointsEl.textContent = Math.max(0, ring.length - 1).toString();
+
+    saveBtn.disabled = false;
+    statusEl.textContent = 'Measurement complete. Adjust any polygon points if needed, then click Preview Save.';
+  }
+
+  document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
+  document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
+
+  saveBtn.addEventListener('click', () => {
+    const lakeName = lakeNameEl.value.trim();
+
+    if (!lakeName) {
+      lakeNameEl.focus();
+      statusEl.textContent = 'Enter a Lake Name before previewing the save.';
+      return;
+    }
+
+    if (!state.polygonGeoJSON) {
+      statusEl.textContent = 'Draw a pond polygon first.';
+      return;
+    }
+
+    const payload = {
+      lakeName: lakeName,
+      mappedAreaAcres: state.mappedAreaAcres,
+      shorelineLF: state.shorelineLF,
+      lakePolygon: JSON.stringify(state.polygonGeoJSON),
+      mappingStatus: 'Mapped',
+      lastMapped: new Date().toISOString()
+    };
+
+    payloadEl.textContent = JSON.stringify(payload, null, 2);
+    previewEl.style.display = 'block';
+    statusEl.textContent = 'This is the exact data structure we can send back to the LakeView Lakes row next.';
+    previewEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  map.on('draw.create', updateMeasurements);
+  map.on('draw.update', updateMeasurements);
+  map.on('draw.delete', updateMeasurements);
+
+  map.on('load', () => {
+    statusEl.textContent = 'Search for the site, click Draw Pond, then trace the shoreline. Double-click the last point to finish.';
+  });
+</script>
+</body>
+</html>
