@@ -155,14 +155,16 @@
   });
   map.addControl(geocoder, 'top-left');
 
-  const draw = new MapboxDraw({
-    displayControlsDefault: false,
-    controls: {
-      polygon: true,
-      trash: true
-    }
-  });
-  map.addControl(draw, 'top-right');
+const draw = new MapboxDraw({
+  displayControlsDefault: false,
+  touchEnabled: true,
+  touchBuffer: 40,
+  controls: {
+    polygon: true,
+    trash: true
+  }
+});
+map.addControl(draw, 'top-right');
 
   const acresEl = document.getElementById('acres');
   const feetEl = document.getElementById('feet');
