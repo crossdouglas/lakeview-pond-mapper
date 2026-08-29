@@ -232,7 +232,7 @@ const lakeId = urlParams.get('lake');
   document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', asynch () => {
     const lakeName = lakeNameEl.value.trim();
 
     if (!lakeName) {
@@ -256,6 +256,24 @@ const lakeId = urlParams.get('lake');
       mappingStatus: 'Mapped',
       lastMapped: new Date().toISOString()
     };
+    const response = await fetch(
+  "https://lakeview-glide-bridge.chris-19d.workers.dev/",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  }
+);
+
+const result = await response.json();
+
+if (!response.ok || !result.ok) {
+  throw new Error(result.error || result.message || "Save failed");
+}
+
+statusEl.textContent = "Mapping saved to LakeView.";
 
     payloadEl.textContent = JSON.stringify(payload, null, 2);
     previewEl.style.display = 'block';
