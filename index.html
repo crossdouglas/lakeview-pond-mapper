@@ -157,11 +157,12 @@
   // Replace only the text inside the quotation marks below with your Mapbox default public token.
   mapboxgl.accessToken = 'pk.eyJ1IjoiY3Jvc3Nkb3VnbGFzIiwiYSI6ImNtdGRmdTVrazB2cHUyem9wbzJnN2E0bTMifQ.A6K95rnm5KW3Z55PxeMSbQ';
 
-  const state = {
-    mappedAreaAcres: null,
-    shorelineLF: null,
-    polygonGeoJSON: null
-  };
+ const state = {
+  mappedAreaAcres: null,
+  shorelineLF: null,
+  polygonGeoJSON: null,
+  mobilePoints: []
+};
 
   const map = new mapboxgl.Map({
     container: 'map',
@@ -257,6 +258,7 @@ const lakeId = urlParams.get('lake');
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
  document.getElementById('addPointBtn').addEventListener('click', () => {
   const center = map.getCenter();
+   state.mobilePoints.push([center.lng, center.lat]);
 
   draw.add({
     type: 'Feature',
@@ -267,7 +269,9 @@ const lakeId = urlParams.get('lake');
     }
   });
 
-  statusEl.textContent = 'Point added. Move the map to the next shoreline point.';
+  statusEl.textContent =
+  'Point ' + state.mobilePoints.length +
+  ' added. Move the map to the next shoreline point.';
 });
 
   saveBtn.addEventListener('click', async () => {
