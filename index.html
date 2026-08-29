@@ -232,7 +232,7 @@ const lakeId = urlParams.get('lake');
   document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
 
-  saveBtn.addEventListener('click', asynch () => {
+  saveBtn.addEventListener('click', async () => {
     const lakeName = lakeNameEl.value.trim();
 
     if (!lakeName) {
