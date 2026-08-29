@@ -98,7 +98,7 @@
     </div>
     <button id="drawBtn" class="primary" type="button">Draw Pond</button>
     <button id="redrawBtn" type="button">Redraw</button>
-    <button id="saveBtn" class="primary" type="button" disabled>Preview Save</button>
+    <button id="saveBtn" class="primary" type="button" disabled>Save to LakeView</button>
   </section>
 
   <div id="map"></div>
@@ -290,7 +290,7 @@ if (!response.ok || !result.ok) {
   throw new Error(result.error || result.message || "Save failed");
 }
 
-statusEl.textContent = "Mapping saved to LakeView.";
+statusEl.textContent = "Saved successfully to LakeView.";
 
     payloadEl.textContent = JSON.stringify(payload, null, 2);
     previewEl.style.display = 'block';
