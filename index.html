@@ -302,11 +302,80 @@ statusEl.textContent = "Mapping saved to LakeView.";
   map.on('draw.update', updateMeasurements);
   map.on('draw.delete', updateMeasurements);
 
-  map.on('load', () => {
-   statusEl.textContent = lakeId
-    ? 'Mapping Waterbody: ' + lakeId + '. Search for the site, click Draw Pond, then trace the shoreline.'
-    : 'Search for the site, click Draw Pond, then trace the shoreline.';
-  });
+  map.on('load', async () => {
+  if (!lakeId) {
+    statusEl.textContent =
+      'Search for the site, click Draw Pond, then trace the shoreline.';
+    return;
+  }
+
+  statusEl.textContent = 'Loading Waterbody: ' + lakeId + '...';
+
+  try {
+    const response = await fetch(
+      'https://lakeview-glide-bridge.chris-19d.workers.dev/?lakeId=' +
+      encodeURIComponent(lakeId)
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok || !result.lake) {
+      throw new Error(result.error || 'Could not load lake');
+    }
+
+    const lake = result.lake;
+
+    if (lake.LakeName) {
+      lakeNameEl.value = lake.LakeName;
+    }
+
+    const savedPolygon = lake['LLake Polygon'];
+
+    if (savedPolygon) {
+      const geometry =
+        typeof savedPolygon === 'string'
+          ? JSON.parse(savedPolygon)
+          : savedPolygon;
+
+      draw.add({
+        type: 'Feature',
+        properties: {},
+        geometry: geometry
+      });
+
+      updateMeasurements();
+
+      const bounds = turf.bbox({
+        type: 'Feature',
+        properties: {},
+        geometry: geometry
+      });
+
+      map.fitBounds(
+        [
+          [bounds[0], bounds[1]],
+          [bounds[2], bounds[3]]
+        ],
+        {
+          padding: 60,
+          duration: 800
+        }
+      );
+
+      statusEl.textContent =
+        'Loaded ' + lakeId + '. Adjust the shoreline if needed, then save.';
+    } else {
+      statusEl.textContent =
+        'Mapping Waterbody: ' + lakeId +
+        '. Search for the site, click Draw Pond, then trace the shoreline.';
+    }
+
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent =
+      'Could not load the existing map. You can still draw the pond manually.';
+  }
+});
 </script>
 </body>
 </html>
