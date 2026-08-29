@@ -255,9 +255,19 @@ const lakeId = urlParams.get('lake');
  const rowId = urlParams.get('row'); 
   document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
-  document.getElementById('addPointBtn').addEventListener('click', () => {
+ document.getElementById('addPointBtn').addEventListener('click', () => {
   const center = map.getCenter();
-  console.log('Add Point:', center.lng, center.lat);
+
+  draw.add({
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Point',
+      coordinates: [center.lng, center.lat]
+    }
+  });
+
+  statusEl.textContent = 'Point added. Move the map to the next shoreline point.';
 });
 
   saveBtn.addEventListener('click', async () => {
