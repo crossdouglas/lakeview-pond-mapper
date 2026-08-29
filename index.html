@@ -228,6 +228,7 @@
   }
 const urlParams = new URLSearchParams(window.location.search);
 const lakeId = urlParams.get('lake');
+ const rowId = urlParams.get('row'); 
   document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
 
