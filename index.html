@@ -120,10 +120,7 @@
 
   <div id="status">Search for the site, click Draw Pond, then trace the shoreline. Double-click the last point to finish.</div>
 
-  <section id="preview" style="display:none;">
-    <h2>Mapping Saved</h2>
-    <pre id="payload" style="display:none;"></pre>
-  </section>
+  
 </div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"></script>
@@ -173,7 +170,7 @@
   const statusEl = document.getElementById('status');
   const saveBtn = document.getElementById('saveBtn');
   const previewEl = document.getElementById('preview');
-  const payloadEl = document.getElementById('payload');
+ 
   const lakeNameEl = document.getElementById('lakeName');
 
   function resetMeasurements() {
@@ -185,7 +182,7 @@
     pointsEl.textContent = '—';
     saveBtn.disabled = true;
     previewEl.style.display = 'none';
-    payloadEl.textContent = '';
+  
   }
 
   function clearAndDraw() {
@@ -292,7 +289,7 @@ if (!response.ok || !result.ok) {
 
 statusEl.textContent = "Saved successfully to LakeView.";
 
-    payloadEl.textContent = JSON.stringify(payload, null, 2);
+    
     previewEl.style.display = 'block';
     statusEl.textContent =
   '✓ Mapping saved to LakeView — ' +
