@@ -121,7 +121,7 @@
   <div id="status">Search for the site, click Draw Pond, then trace the shoreline. Double-click the last point to finish.</div>
 
   <section id="preview">
-    <h2>LakeView Save Preview</h2>
+    <h2>LakeView Save Details</h2>
     <pre id="payload"></pre>
   </section>
 </div>
@@ -294,7 +294,7 @@ statusEl.textContent = "Saved successfully to LakeView.";
 
     payloadEl.textContent = JSON.stringify(payload, null, 2);
     previewEl.style.display = 'block';
-    statusEl.textContent = 'This is the exact data structure we can send back to the LakeView Lakes row next.';
+    statusEl.textContent = 'Saved successfully to LakeView.';
     previewEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
