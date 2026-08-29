@@ -121,8 +121,8 @@
   <div id="status">Search for the site, click Draw Pond, then trace the shoreline. Double-click the last point to finish.</div>
 
   <section id="preview">
-    <h2>LakeView Save Details</h2>
-    <pre id="payload"></pre>
+    <h2>Mapping Saved</h2>
+    <pre id="payload" style="display:none;"></pre>
   </section>
 </div>
 
@@ -294,7 +294,12 @@ statusEl.textContent = "Saved successfully to LakeView.";
 
     payloadEl.textContent = JSON.stringify(payload, null, 2);
     previewEl.style.display = 'block';
-    statusEl.textContent = 'Saved successfully to LakeView.';
+    statusEl.textContent =
+  '✓ Mapping saved to LakeView — ' +
+  state.mappedAreaAcres.toFixed(2) +
+  ' acres · ' +
+  Math.round(state.shorelineLF).toLocaleString() +
+  ' ft shoreline';
     previewEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
