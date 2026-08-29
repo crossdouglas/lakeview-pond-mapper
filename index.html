@@ -82,15 +82,26 @@
       #map { height: 480px; }
       #results { grid-template-columns: 1fr; }
     }
-  #mapCrosshair {
-  position: fixed;
+  #mapWrap {
+  position: relative;
+}
+
+#mapCrosshair {
+  position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-  font-size: 32px;
+  width: 34px;
+  height: 34px;
+  border: 3px solid white;
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
   font-weight: bold;
-  line-height: 1;
+  line-height: 28px;
+  text-align: center;
+  text-shadow: 0 0 4px black;
   pointer-events: none;
 }
   </style>
@@ -113,9 +124,10 @@
     <button id="saveBtn" class="primary" type="button" disabled>Save to LakeView</button>
   </section>
 
+ <div id="mapWrap">
   <div id="map"></div>
   <div id="mapCrosshair">+</div>
-
+</div>
   <section id="results">
     <div class="card">
       <div class="label">Surface Area</div>
