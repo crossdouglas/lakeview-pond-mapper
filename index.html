@@ -259,7 +259,20 @@ const lakeId = urlParams.get('lake');
  document.getElementById('addPointBtn').addEventListener('click', () => {
   const center = map.getCenter();
    state.mobilePoints.push([center.lng, center.lat]);
+draw.deleteAll();
 
+if (state.mobilePoints.length === 1) {
+  draw.add({
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Point',
+      coordinates: state.mobilePoints[0]
+    }
+  });
+} else {
+  
+}
   draw.add({
     type: 'Feature',
     properties: {},
