@@ -245,7 +245,23 @@ const lakeId = urlParams.get('lake');
       statusEl.textContent = 'Draw a pond polygon first.';
       return;
     }
+const imageFeature = {
+  type: "Feature",
+  properties: {
+    stroke: "#ff9900",
+    "stroke-width": 3,
+    "stroke-opacity": 1,
+    fill: "#ff9900",
+    "fill-opacity": 0.08
+  },
+  geometry: state.polygonGeoJSON
+};
 
+const lakeImage =
+  "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/geojson(" +
+  encodeURIComponent(JSON.stringify(imageFeature)) +
+  ")/auto/800x500?padding=50&access_token=" +
+  mapboxgl.accessToken;
     const payload = {
       lakeId:lakeId,
       rowId: rowId,
@@ -253,6 +269,7 @@ const lakeId = urlParams.get('lake');
       mappedAreaAcres: state.mappedAreaAcres,
       shorelineLF: state.shorelineLF,
       lakePolygon: JSON.stringify(state.polygonGeoJSON),
+      lakeImage: lakeImage,
       mappingStatus: 'Mapped',
       lastMapped: new Date().toISOString()
     };
