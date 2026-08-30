@@ -492,10 +492,39 @@ statusEl.textContent = "Saved successfully to LakeView.";
 
       statusEl.textContent =
         'Pond mapped. Tap Redraw to make changes, or Save to keep this mapping.';
-    } else {
-      statusEl.textContent =
-  'Ready to map. Search for the pond, move the crosshair to the shoreline, and tap Add Point.';
-    }
+   } else {
+  statusEl.textContent = 'Finding your current location...';
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        map.flyTo({
+          center: [
+            position.coords.longitude,
+            position.coords.latitude
+          ],
+          zoom: 18,
+          duration: 1200
+        });
+
+        statusEl.textContent =
+          'Location found. Move the crosshair to the shoreline and tap Add Point.';
+      },
+      () => {
+        statusEl.textContent =
+          'Ready to map. Search for the pond, move the crosshair to the shoreline, and tap Add Point.';
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  } else {
+    statusEl.textContent =
+      'Ready to map. Search for the pond, move the crosshair to the shoreline, and tap Add Point.';
+  }
+}
 
   } catch (error) {
     console.error(error);
