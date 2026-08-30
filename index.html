@@ -82,7 +82,10 @@
       #addPointBtn { grid-column: 1 / -1; font-size: 17px; min-height: 52px; }
       #saveBtn { grid-column: 1 / -1; }
       #map { height: 480px; }
-      #results { grid-template-columns: 1fr; }
+     #results { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 8px 12px; }
+      #results .card { padding: 8px 6px; text-align: center; }
+#results .label { font-size: 10px; margin-bottom: 2px; }
+#results .value { font-size: 18px; }
     }
   #mapWrap {
   position: relative;
