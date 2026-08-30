@@ -423,8 +423,8 @@ statusEl.textContent = "Saved successfully to LakeView.";
   
   map.on('load', async () => {
   if (!lakeId) {
-    statusEl.textContent =
-      'Search for the site, click Draw Pond, then trace the shoreline.';
+  statusEl.textContent =
+  'Search for the pond, move the crosshair to the shoreline, and tap Add Point.';
     return;
   }
 
@@ -482,11 +482,10 @@ statusEl.textContent = "Saved successfully to LakeView.";
       );
 
       statusEl.textContent =
-        'Loaded ' + lakeId + '. Adjust the shoreline if needed, then save.';
+        'Pond mapped. Tap Redraw to make changes, or Save to keep this mapping.';
     } else {
       statusEl.textContent =
-        'Mapping Waterbody: ' + lakeId +
-        '. Search for the site, click Draw Pond, then trace the shoreline.';
+  'Ready to map. Search for the pond, move the crosshair to the shoreline, and tap Add Point.';
     }
 
   } catch (error) {
