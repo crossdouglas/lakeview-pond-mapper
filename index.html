@@ -121,6 +121,7 @@
     <button id="drawBtn" class="primary" type="button">Draw Pond</button>
     <button id="redrawBtn" type="button">Redraw</button>
     <button id="addPointBtn" class="primary" type="button">Add Point</button>
+    <button id="finishPondBtn" type="button">Finish Pond</button>
     <button id="saveBtn" class="primary" type="button" disabled>Save to LakeView</button>
   </section>
 
@@ -304,6 +305,37 @@ if (state.mobilePoints.length === 1) {
   ' added. Move the map to the next shoreline point.';
 });
 
+document.getElementById('finishPondBtn').addEventListener('click', () => {
+  if (state.mobilePoints.length < 3) {
+    statusEl.textContent = 'Add at least 3 shoreline points before finishing the pond.';
+    return;
+  }
+
+  const closedCoordinates = [
+    ...state.mobilePoints,
+    state.mobilePoints[0]
+  ];
+
+  const polygonFeature = {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [closedCoordinates]
+    }
+  };
+
+  draw.deleteAll();
+  draw.add(polygonFeature);
+
+  state.polygonGeoJSON = polygonFeature.geometry;
+
+  updateMeasurements();
+
+  statusEl.textContent =
+    'Pond finished. Review the measurements, then save to LakeView.';
+});
+  
   saveBtn.addEventListener('click', async () => {
     const lakeName = lakeNameEl.value.trim();
 
