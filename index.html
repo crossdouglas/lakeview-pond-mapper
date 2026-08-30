@@ -126,7 +126,7 @@
     
   <button id="addPointBtn" class="primary" type="button">Add Point</button>
 <button id="redrawBtn" type="button">Redraw</button>
-<button id="finishPondBtn" type="button">Finish Pond</button>
+<button id="finishPondBtn" type="button" disabled>Finish Pond</button>
 <button id="saveBtn" class="primary" type="button" disabled>Save to LakeView</button>
   </section>
 <div id="status">Move the crosshair to the shoreline and tap Add Point.</div>
@@ -224,6 +224,7 @@ map.addControl(draw, 'top-right');
   draw.deleteAll();
   resetMeasurements();
   state.mobilePoints = [];
+    document.getElementById('finishPondBtn').disabled = true;
   state.polygonGeoJSON = null;
 
   statusEl.textContent =
@@ -272,9 +273,17 @@ const lakeId = urlParams.get('lake');
     'This pond is already mapped. Tap Redraw before creating a new shoreline.';
   return;
 }
+  
+   
    const center = map.getCenter();
-   state.mobilePoints.push([center.lng, center.lat]);
+state.mobilePoints.push([center.lng, center.lat]);
+
+if (state.mobilePoints.length >= 3) {
+  document.getElementById('finishPondBtn').disabled = false;
+}
+
 draw.deleteAll();
+
 
 if (state.mobilePoints.length === 1) {
 
