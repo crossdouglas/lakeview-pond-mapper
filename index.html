@@ -314,9 +314,15 @@ if (state.mobilePoints.length === 1) {
 
 }
 
+  if (state.mobilePoints.length < 3) {
   statusEl.textContent =
-  'Point ' + state.mobilePoints.length +
-  ' added. Move the map to the next shoreline point.';
+    'Point ' + state.mobilePoints.length +
+    ' added. Move the crosshair to the next shoreline point and tap Add Point.';
+} else {
+  statusEl.textContent =
+    'Point ' + state.mobilePoints.length +
+    ' added. Continue around the shoreline, or tap Finish Pond when complete.';
+}
 });
 
 document.getElementById('finishPondBtn').addEventListener('click', () => {
