@@ -198,7 +198,7 @@ map.addControl(draw, 'top-right');
   const pointsEl = document.getElementById('points');
   const statusEl = document.getElementById('status');
   const saveBtn = document.getElementById('saveBtn');
-  const previewEl = document.getElementById('preview');
+ 
  
   const lakeNameEl = document.getElementById('lakeName');
 
@@ -210,7 +210,7 @@ map.addControl(draw, 'top-right');
     feetEl.textContent = '—';
     pointsEl.textContent = '—';
     saveBtn.disabled = true;
-    previewEl.style.display = 'none';
+   
   
   }
 
@@ -400,14 +400,14 @@ if (!response.ok || !result.ok) {
 statusEl.textContent = "Saved successfully to LakeView.";
 
     
-    previewEl.style.display = 'block';
+  
     statusEl.textContent =
   '✓ Mapping saved to LakeView — ' +
   state.mappedAreaAcres.toFixed(2) +
   ' acres · ' +
   Math.round(state.shorelineLF).toLocaleString() +
   ' ft shoreline';
-    previewEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  
   });
 
   map.on('draw.create', updateMeasurements);
