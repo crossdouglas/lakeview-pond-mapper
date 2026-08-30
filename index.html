@@ -118,7 +118,7 @@
       <label for="lakeName">Lake Name</label>
       <input id="lakeName" type="text" placeholder="Example: Lake 7">
     </div>
-    <button id="drawBtn" class="primary" type="button">Draw Pond</button>
+    
     <button id="redrawBtn" type="button">Redraw</button>
     <button id="addPointBtn" class="primary" type="button">Add Point</button>
     <button id="finishPondBtn" type="button">Finish Pond</button>
@@ -215,11 +215,14 @@ map.addControl(draw, 'top-right');
   }
 
   function clearAndDraw() {
-    draw.deleteAll();
-    resetMeasurements();
-    draw.changeMode('draw_polygon');
-    statusEl.textContent = 'Trace the shoreline. Double-click the last point to finish the polygon.';
-  }
+  draw.deleteAll();
+  resetMeasurements();
+  state.mobilePoints = [];
+  state.polygonGeoJSON = null;
+
+  statusEl.textContent =
+    'Mapping cleared. Move the crosshair to the shoreline and tap Add Point.';
+}
 
   function updateMeasurements() {
     const data = draw.getAll();
@@ -255,7 +258,7 @@ map.addControl(draw, 'top-right');
 const urlParams = new URLSearchParams(window.location.search);
 const lakeId = urlParams.get('lake');
  const rowId = urlParams.get('row'); 
-  document.getElementById('drawBtn').addEventListener('click', clearAndDraw);
+ 
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
  document.getElementById('addPointBtn').addEventListener('click', () => {
   const center = map.getCenter();
