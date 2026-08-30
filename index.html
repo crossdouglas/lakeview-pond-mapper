@@ -412,8 +412,7 @@ statusEl.textContent = "Saved successfully to LakeView.";
 
   map.on('draw.create', updateMeasurements);
   map.on('draw.update', updateMeasurements);
-  map.on('draw.delete', updateMeasurements);
-
+  
   map.on('load', async () => {
   if (!lakeId) {
     statusEl.textContent =
