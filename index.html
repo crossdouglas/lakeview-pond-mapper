@@ -224,6 +224,8 @@ map.addControl(draw, 'top-right');
   draw.deleteAll();
   resetMeasurements();
   state.mobilePoints = [];
+    document.getElementById('addPointBtn').disabled = false;
+document.getElementById('saveBtn').disabled = true;
     document.getElementById('finishPondBtn').disabled = true;
   state.polygonGeoJSON = null;
 
