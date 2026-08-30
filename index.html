@@ -263,7 +263,12 @@ const lakeId = urlParams.get('lake');
  
   document.getElementById('redrawBtn').addEventListener('click', clearAndDraw);
  document.getElementById('addPointBtn').addEventListener('click', () => {
-  const center = map.getCenter();
+  if (state.polygonGeoJSON && state.mobilePoints.length === 0) {
+  statusEl.textContent =
+    'This pond is already mapped. Tap Redraw before creating a new shoreline.';
+  return;
+}
+   const center = map.getCenter();
    state.mobilePoints.push([center.lng, center.lat]);
 draw.deleteAll();
 
