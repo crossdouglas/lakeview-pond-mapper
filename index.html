@@ -360,6 +360,9 @@ document.getElementById('finishPondBtn').addEventListener('click', () => {
   draw.add(polygonFeature);
 
   state.polygonGeoJSON = polygonFeature.geometry;
+  document.getElementById('addPointBtn').disabled = true;
+document.getElementById('finishPondBtn').disabled = true;
+document.getElementById('saveBtn').disabled = false;
 
   updateMeasurements();
 
