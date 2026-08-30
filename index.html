@@ -469,6 +469,9 @@ statusEl.textContent = "Saved successfully to LakeView.";
     const savedPolygon = lake['LLake Polygon'];
 
     if (savedPolygon) {
+      document.getElementById('addPointBtn').disabled = true;
+document.getElementById('finishPondBtn').disabled = true;
+document.getElementById('saveBtn').disabled = false;
       const geometry =
         typeof savedPolygon === 'string'
           ? JSON.parse(savedPolygon)
