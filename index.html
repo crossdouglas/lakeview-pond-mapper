@@ -262,6 +262,8 @@ const lakeId = urlParams.get('lake');
 draw.deleteAll();
 
 if (state.mobilePoints.length === 1) {
+
+  // First point
   draw.add({
     type: 'Feature',
     properties: {},
@@ -270,17 +272,32 @@ if (state.mobilePoints.length === 1) {
       coordinates: state.mobilePoints[0]
     }
   });
+
 } else {
-  
-}
+
+  // Draw the connecting shoreline line
   draw.add({
     type: 'Feature',
     properties: {},
     geometry: {
-      type: 'Point',
-      coordinates: [center.lng, center.lat]
+      type: 'LineString',
+      coordinates: state.mobilePoints
     }
   });
+
+  // Draw every waypoint on top of the line
+  state.mobilePoints.forEach((point) => {
+    draw.add({
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Point',
+        coordinates: point
+      }
+    });
+  });
+
+}
 
   statusEl.textContent =
   'Point ' + state.mobilePoints.length +
