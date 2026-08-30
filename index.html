@@ -189,9 +189,9 @@ const draw = new MapboxDraw({
   touchEnabled: true,
   touchBuffer: 40,
   controls: {
-    polygon: true,
-    trash: true
-  }
+  polygon: false,
+  trash: false
+}
 });
 map.addControl(draw, 'top-right');
 
